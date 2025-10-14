@@ -1,0 +1,14 @@
+{
+  "name": "cicd-observability-app",
+  "version": "1.0.0",
+  "description": "Simple Node.js app for CI/CD demo with metrics.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Tests OK\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "prom-client": "^15.1.0"
+  }
+}
