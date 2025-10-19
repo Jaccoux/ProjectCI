@@ -27,6 +27,6 @@ services:
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=promotor
+      - GF_SECURITY_ADMIN_PASSWORD=@dm1nistr@t0r
     depends_on:
       - prometheus

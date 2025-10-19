@@ -34,6 +34,11 @@ app.get('/metrics', async (req, res) => {
 });
 
 // Démarrage du serveur
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+//app.listen(PORT, () => {
+//  console.log(`Server running on http://localhost:${PORT}`);
+//});
+// Correction démarrage du serveur avec Gemini
+const HOST = '0.0.0.0'; // <-- AJOUTER ET UTILISER CETTE LIGNE
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
 });

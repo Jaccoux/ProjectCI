@@ -11,4 +11,5 @@ COPY --from=build /app/node_modules ./node_modules
 COPY index.js .
 
 EXPOSE 3000
-CMD ["npm", "start"]
+# Ancien : CMD ["npm", "start"]
+CMD ["node", "index.js"]
