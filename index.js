@@ -3,23 +3,42 @@ const client = require('prom-client');
 const app = express();
 const PORT = 3000;
 
-// Créer un compteur pour les requêtes HTTP
+// Créer un compteur pour les requêtes HTTP (Métrique existante)
 const http_requests_total = new client.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
   labelNames: ['method', 'route', 'code'],
 });
 
-// Middleware pour compter chaque requête
+// NOUVEAU : Créer un Histogramme pour mesurer la latence
+const http_request_duration_seconds = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route'],
+  // Buckets (compartiments) de latence en secondes
+  buckets: [0.1, 0.5, 1, 5, 10] 
+});
+
+// Middleware pour compter chaque requête ET mesurer la latence
 app.use((req, res, next) => {
-    res.on('finish', () => {
-        http_requests_total.inc({
-            method: req.method,
-            route: req.path,
-            code: res.statusCode
-        });
+  // NOUVEAU : Démarre le chronomètre pour la durée de la requête
+  const end = http_request_duration_seconds.startTimer();
+
+  res.on('finish', () => {
+    // Logique de compteur existante
+    http_requests_total.inc({
+      method: req.method,
+      route: req.path,
+      code: res.statusCode
     });
-    next();
+
+    // NOUVEAU : Arrête le chronomètre et enregistre la latence dans l'Histogramme
+    end({
+      method: req.method,
+      route: req.path
+    });
+  });
+  next();
 });
 
 // Route principale
@@ -34,11 +53,7 @@ app.get('/metrics', async (req, res) => {
 });
 
 // Démarrage du serveur
-//app.listen(PORT, () => {
-//  console.log(`Server running on http://localhost:${PORT}`);
-//});
-// Correction démarrage du serveur avec Gemini
-const HOST = '0.0.0.0'; // <-- AJOUTER ET UTILISER CETTE LIGNE
+const HOST = '0.0.0.0';
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });
